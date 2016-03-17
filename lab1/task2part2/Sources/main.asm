@@ -48,7 +48,7 @@ _Startup:
                 STAA            DDRB            ; configure port B as output
 
 fish_loop:      JSR             write_fish      ; jump to the write_fish subroutine
-                BSR             fish_loop       ; keep running said subroutine
+                BRA             fish_loop       ; keep running said subroutine
 
 ; ********************************************************************************
 ; SUBROUTINE: write_fish

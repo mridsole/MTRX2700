@@ -43,6 +43,6 @@ _Startup:
                 STAA            PTJ             ; enable the LEDs by writing $00 to port J
                 
 read_write_LEDs:
-                LDAA            PTH           ; read the DIP switches into register A
+                LDAA            PTH             ; read the DIP switches into register A
                 STAA            PORTB
                 BRA             read_write_LEDs
