@@ -54,16 +54,15 @@ main_loop:      LDAA            #LEDON          ; load accumulator with value fo
 ; waits exactly 7.8125 ms, using an outer and inner (nested) loop
 ; with predefined constants - see logbook for derivation
 ; (also uses a secondary smaller loop for fine tuning)
-; TODO: work out the constants!
 ; ********************************************************************************
 delay_64_Hz:
                 PSHX                            ; push X to the stack, in case the  caller is using
                 PSHY                            ; same thing for Y
-                LDX             #5577           ; load decrement counter (constant C1) in x
+                LDX             #330            ; load decrement counter (constant C1) in x
 delay_64_Hz_L:  
                 DEX                             ; decrement X every outer loop cycle
             
-                LDY             #1119           ; load decrement counter (constant C2) in y
+                LDY             #140            ; load decrement counter (constant C2) in y
 delay_64_Hz_L2: 
                 DEY                             ; decrement Y every inner loop cycle
 
@@ -73,8 +72,8 @@ delay_64_Hz_L2:
                 INX                             ; .. completing the subtraction by 0
                 BNE             delay_64_Hz_L   ; if X isn't 0, branch to the outer loop
             
-; this gets pretty close, but not quite: there's still 3867 cycles to use
-                LDX             #967            ; constant C3
+; this gets pretty close, but not quite: so run another small loop to make up for it
+                LDX             #176            ; constant C3
 delay_64_Hz_L3: 
                 DEX                             ; decrement X
                 BNE             delay_64_Hz_L3  ; if X isn't zero, branch to loop
