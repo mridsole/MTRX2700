@@ -96,7 +96,10 @@ main_loop:      BSR             read_write_dip  ; branch to the read_write_dip s
 ; ******************************************************************************** 
 read_write_dip:
                 LDAB            PTH             ; read the 8 bit num from the dip switches
-                LDAB            #$5B            ; STUB THIS FOR NOW
+
+                ; (this was used for testing in the simulator (without the board)):
+                ; LDAB            #$5B            ; STUB THIS FOR NOW
+
                 STAB            DIP_DATA        ; store B in memory (necessary for AND)
                 
                 ; bit mask to get the least significant four bits:
