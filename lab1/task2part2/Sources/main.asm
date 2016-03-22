@@ -1,5 +1,5 @@
 ; ********************************************************************************
-; MTRX1702 LAB 1 
+; MTRX2700 LAB 1 
 ; Task 2 Part 2: "The 7 Segment Display"
 ; GROUP 6
 ; DESCRIPTION: this program writes 'FISH' to the 7 segment display

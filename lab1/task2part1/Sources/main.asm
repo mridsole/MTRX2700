@@ -1,5 +1,5 @@
 ; ********************************************************************************
-; MTRX1702 LAB 1 
+; MTRX2700 LAB 1 
 ; Task 2 Part 1: "Switches and LEDs"
 ; GROUP 6
 ; DESCRIPTION: this program continuously outputs the state of the DIP switches
@@ -44,5 +44,5 @@ _Startup:
                 
 read_write_LEDs:
                 LDAA            PTH             ; read the DIP switches into register A
-                STAA            PORTB
-                BRA             read_write_LEDs
+                STAA            PORTB           ; write that data to the LEDs
+                BRA             read_write_LEDs ; branch back to loop start

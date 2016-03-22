@@ -1,5 +1,5 @@
 ; ********************************************************************************
-; MTRX1702 LAB 1 
+; MTRX2700 LAB 1 
 ; Task 1 Part 4: "Writing Your Own Code"
 ; GROUP 6
 ; DESCRIPTION: flashes an LED at 0.5 Hz (1 second on, 1 second off)
@@ -58,22 +58,17 @@ main_loop:      LDAA            #LEDON          ; load accumulator with value fo
 delay_1_sec:
                 PSHX                            ; push X to the stack, in case the  caller is using
                 PSHY                            ; same thing for Y
-                LDX             #3252           ; load decrement counter (constant C1) in x
+                LDX             #1000           ; load decrement counter (constant C1) in x
 delay_1_sec_L:  
-                DEX                             ; decrement X every outer loop cycle
-            
-                LDY             #1843           ; load decrement counter (constant C2) in y
+                LDY             #5998           ; load decrement counter (constant C2) in y
 delay_1_sec_L2: 
                 DEY                             ; decrement Y every inner loop cycle
-
                 BNE             delay_1_sec_L2  ; if Y isn't 0, branch to the inner loop
-            
-                DEX                             ; sub 0 from X, so we can use BNE  
-                INX                             ; .. completing the subtraction by 0
+                DEX                             ; decrement X every outer loop cycle
                 BNE             delay_1_sec_L   ; if X isn't 0, branch to the outer loop
             
 ; this gets pretty close, but not quite: so run another small loop to make up for it
-                LDX             #1682           ; constant C3
+                LDX             #996            ; constant C3
 delay_1_sec_L3: 
                 DEX                             ; decrement X
                 BNE             delay_1_sec_L3  ; if X isn't zero, branch to loop

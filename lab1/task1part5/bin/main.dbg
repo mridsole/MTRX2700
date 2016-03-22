@@ -8725,22 +8725,17 @@ main_loop:      LDAA            #LEDON          ; load accumulator with value fo
 delay_64_Hz:
                 PSHX                            ; push X to the stack, in case the  caller is using
                 PSHY                            ; same thing for Y
-                LDX             #330            ; load decrement counter (constant C1) in x
+                LDX             #1000           ; load decrement counter (constant C1) in x
 delay_64_Hz_L:  
-                DEX                             ; decrement X every outer loop cycle
-            
-                LDY             #140            ; load decrement counter (constant C2) in y
+                LDY             #45             ; load decrement counter (constant C2) in y
 delay_64_Hz_L2: 
                 DEY                             ; decrement Y every inner loop cycle
-
                 BNE             delay_64_Hz_L2  ; if Y isn't 0, branch to the inner loop
-            
-                DEX                             ; sub 0 from X, so we can use BNE  
-                INX                             ; .. completing the subtraction by 0
+                DEX                             ; decrement X every outer loop cycle
                 BNE             delay_64_Hz_L   ; if X isn't 0, branch to the outer loop
             
 ; this gets pretty close, but not quite: so run another small loop to make up for it
-                LDX             #176            ; constant C3
+                LDX             #871            ; constant C3
 delay_64_Hz_L3: 
                 DEX                             ; decrement X
                 BNE             delay_64_Hz_L3  ; if X isn't zero, branch to loop

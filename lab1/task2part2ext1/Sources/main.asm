@@ -1,5 +1,5 @@
 ; ********************************************************************************
-; MTRX1702 LAB 1 
+; MTRX2700 LAB 1 
 ; Task 2 Part 2: "The 7 Segment Display" Extension 1
 ; GROUP 6
 ; DESCRIPTION: this program monitors the DIP switches and writes the data in hex
