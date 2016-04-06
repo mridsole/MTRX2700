@@ -8688,11 +8688,11 @@ mNVFSEC_KEYEN1:     equ    %10000000
                 DC.W            Entry           ; Reset Vector
                 
 ROMStart        EQU             $4000           
-TDRE_bitmask    EQU             $80
 
 ; variable/data section
                 ORG             RAMStart
 
+TDRE_bitmask    FCB             $80
 
 ; our data strings - terminated by null character:
 str1            FCB             "fi",$00
@@ -8723,37 +8723,17 @@ config_sci      SEI                             ; disable all interrupts
                 MOVB            #$08,SCI1CR2
                 CLI                             ; enable interrupts
                 
-; write to the SCI in a loop
+                ; write to the SCI in a loop
 LOOP_WRITE_SCI: 
                 LDX             #str1           ; load address of start of str1 into A
                 JSR             write_str_sci   ; write the first string
                 JSR             delay_1_sec     ; delay for about a second
 
-                ; write new line characters
-                JSR             write_newline_sci               
-
                 LDX             #str2           ; load address of start of str2 into A
                 JSR             write_str_sci   ; write the second string
                 JSR             delay_1_sec     ; delay for about a second
-                
-                ; write new line characters
-                JSR             write_newline_sci               
 
                 BRA             LOOP_WRITE_SCI  ; keep looping
-
-; ******************************************************************************** 
-; SUBROUTINE: write_newline_sci
-; ARGS: None
-; writes \r\n (carriage return then a new line character) to the terminal
-; ********************************************************************************
-write_newline_sci:
-                PSHB                            ; put B on the stack in case it's in use
-                LDAB            #$0D            ; load B with ASCII for \r (carriage ret.)
-                JSR             write_byte_sci  ; write it to SCI
-                LDAB            #$0A            ; load B with ASCII for \n (new line)
-                JSR             write_byte_sci  ; write it to SCI
-                PULB                            ; pull B back from stack
-                RTS                             ; return
 
 ; ******************************************************************************** 
 ; SUBROUTINE: write_str_sci
@@ -8784,7 +8764,7 @@ write_byte_sci:
                 PSHA                            ; put A on the stack in case it's in use
 write_byte_sci_L:
                 LDAA            SCI1SR1         ; poll the SCI status register
-                ANDA            #TDRE_bitmask   ; isolate the TDRE bit
+                ANDA            TDRE_bitmask    ; isolate the TDRE bit
                 ; if TDRE is 0, keep polling:
                 BEQ             write_byte_sci_L 
                 STAB            SCI1DRL         ; TDRE is 1, so write the data

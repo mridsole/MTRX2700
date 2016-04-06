@@ -26,12 +26,6 @@ RDRF_bitmask    EQU             $20             ; Receive Data Register Full bit
 ; variable/data section
                 ORG             RAMStart
 
-TDRE_bitmask    FCB             $80
-
-; our data strings - terminated by null character:
-str1            FCB             "fi",$00
-str2            FCB             "second thingy",$00
-
 ; code section
                 ORG             ROMStart
 
@@ -63,14 +57,16 @@ LED_CONFIG:                                     ; configure the relevant LED por
                 STAA            DDRJ            ; configure port J as an output
                 LDAA            #$00
                 STAA            PTJ             ; enable all of the LEDs
-                
+
+                LDX             #0
                 
                 ; write to the SCI in a loop
 LOOP_READ_SCI: 
                 LDAA            SCI1SR1         ; poll the SCI status register
-                ANDA            RDRF_bitmask    ; isolate the RDRF bit
+                ANDA            #RDRF_bitmask   ; isolate the RDRF bit
                 BEQ             LOOP_READ_SCI   ; if RDRF is 0, keep polling
-                LDAA            SCI1SDL         ; read some data in from the SCI
+                INX                             ; ... debugging
+                LDAA            SCI1DRL         ; read some data in from the SCI
                 STAA            PORTB           ; write the data to the LEDs
-                BRA             LOOP_WRITE_SCI  ; keep looping
+                BRA             LOOP_READ_SCI  ; keep looping
 
