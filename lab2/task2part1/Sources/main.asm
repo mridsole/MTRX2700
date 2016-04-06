@@ -20,18 +20,16 @@
                 ORG             $FFFE
                 DC.W            Entry           ; Reset Vector
                 
-; ISR config: Timer 4
-                ORG             $FFE6
-                DC.W            OCISR
-                
 ROMStart        EQU             $4000           
-PERIOD          EQU             32000
 
 ; variable/data section
                 ORG             RAMStart
 
-str1            FCB             "first string"
-str2            FCB             "second thingy"
+TDRE_bitmask    FCB             $80
+
+; our data strings - terminated by null character:
+str1            FCB             "fi",$00
+str2            FCB             "second thingy",$00
 
 ; code section
                 ORG             ROMStart
@@ -39,40 +37,74 @@ str2            FCB             "second thingy"
 Entry:
 _Startup:
                 LDS             #RAMEnd+1       ; initialize the stack pointer
-                CLI                             ; enable interrupts
                 
-                ; configure the serial communications interface
+; configure the serial communications interface:
 config_sci      SEI                             ; disable all interrupts
                 
-                ; TODO: find appropriate baud rate value
-                MOVB            #$01,SCIOBDL    ; set the baud rate low byte
-                MOVB            #$01,SCIOBH     ; set the baud rate higher bits
+                ; see logbook for the calculations - baud rate is 9600, so here
+                ; we put 156 (0x9C) into the baud rate registers
+                MOVB            #$00,SCI1BDH    ; set the baud rate low byte
+                MOVB            #$9C,SCI1BDL    ; set the baud rate higher bits
                 
-                ; now set word length and wake up
+                ; now set word length and wake up, and parity configuration
+                ; M = 0 (8 bit data), WAKE = 0, and no parity:
+                MOVB            #$00,SCI1CR1
 
+                ; complete SCI config by writing to the SCI control register 2
+                ; only use the transmission functionality (no interrupts)
 
-                MOVB            #$01,TCTL1      ; set up output to toggle
-                MOVB            #$10,TIOS       ; select channel 4 for output compare
-                MOVB            #$80,TSCR1      ; enable timers
-                MOVB            #$04,TSCR2      ; prescaler div 16
-                BSET            TIE,#$10        ; enable timer interrupt 4
+                MOVB            #$08,SCI1CR2
                 CLI                             ; enable interrupts
                 
-                ; enable the LEDs
-                BSR             LED_ENABLE
+                ; write to the SCI in a loop
+LOOP_WRITE_SCI: 
+                LDX             #str1           ; load address of start of str1 into A
+                JSR             write_str_sci   ; write the first string
+                JSR             delay_1_sec     ; delay for about a second
+
+                LDX             #str2           ; load address of start of str2 into A
+                JSR             write_str_sci   ; write the second string
+                JSR             delay_1_sec     ; delay for about a second
+
+                BRA             LOOP_WRITE_SCI  ; keep looping
+
+; ******************************************************************************** 
+; SUBROUTINE: write_str_sci
+; ARGS: X: the address of the start of the string to write
+; writes a null-terminated (ending in #$00) string to the serial communications
+; interface
+; ********************************************************************************
+write_str_sci:
+                PSHB                            ; put B on the stack in case it's in use
+                LDAB            X               ; load B with value at address in X
+write_str_sci_L:
+                JSR             write_byte_sci  ; write the character to the SCI
+                INX                             ; increment X along the string
+                LDAB            X               ; load B with the value at address in X
+                CMPB            #$00            ; compare the current char with #$00
+                BNE             write_str_sci_L ; if the char is the null char, exit the loop
+
+                PULB                            ; pull B back from the stack
+                RTS                             ; return
+
+; ********************************************************************************
+; SUBROUTINE: write_byte_sci
+; ARGS: B: the ASCII character to write 
+; writes one byte to the serial communications interface
+; keeps polling until the TDRE byte is 1, then writes it
+; ********************************************************************************
+write_byte_sci:
+                PSHA                            ; put A on the stack in case it's in use
+write_byte_sci_L:
+                LDAA            SCI1SR1         ; poll the SCI status register
+                ANDA            TDRE_bitmask    ; isolate the TDRE bit
+                ; if TDRE is 0, keep polling:
+                BEQ             write_byte_sci_L 
+                STAB            SCI1DRL         ; TDRE is 1, so write the data
                 
-                ; loop forever (wait for interrupts)
-LOOP:           *
-
-OCISR:
-
-LED_ENABLE
-                MOVB            #$FF,DDRB
-                MOVB            #$FF,DDRJ
-                BCLR            PTJ,$02
-                CLR             PORTB
-                RTS
-
+                PULA                            ; pull A back from the stack
+                RTS                             ; return
+                
 ; ********************************************************************************
 ; SUBROUTINE: delay_1_sec
 ; ARGS: None
