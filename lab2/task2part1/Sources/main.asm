@@ -20,12 +20,16 @@
                 ORG             $FFFE
                 DC.W            Entry           ; Reset Vector
                 
+; ISR config: Timer 4
+                ORG             $FFE6
+                DC.W            OCISR
+                
 ROMStart        EQU             $4000           
+PERIOD          EQU             32000
 
 ; variable/data section
                 ORG             RAMStart
 
-TDRE_bitmask    FCB             $80
 str1            FCB             "first string"
 str2            FCB             "second thingy"
 
@@ -35,38 +39,40 @@ str2            FCB             "second thingy"
 Entry:
 _Startup:
                 LDS             #RAMEnd+1       ; initialize the stack pointer
+                CLI                             ; enable interrupts
                 
                 ; configure the serial communications interface
 config_sci      SEI                             ; disable all interrupts
                 
                 ; TODO: find appropriate baud rate value
-                MOVB            #$ff,SCI0BDL    ; set the baud rate low byte
-                MOVB            #$ff,SCI0BDH    ; set the baud rate higher bits
+                MOVB            #$01,SCIOBDL    ; set the baud rate low byte
+                MOVB            #$01,SCIOBH     ; set the baud rate higher bits
                 
-                ; now set word length and wake up, and parity configuration
-                ; TODO: figure out if this is correct in the lab
-                MOVB            #$0E,SCI0CR1
+                ; now set word length and wake up
 
-                ; complete SCI config by writing to the SCI control register 2
-                ; configures (... stuff here)
-                ; TODO: figure out if this is correct, I think this one is
-                ; (this enables only the transmitter bit, nothing else)
-                MOVB            #$08,SCI0CR2
 
+                MOVB            #$01,TCTL1      ; set up output to toggle
+                MOVB            #$10,TIOS       ; select channel 4 for output compare
+                MOVB            #$80,TSCR1      ; enable timers
+                MOVB            #$04,TSCR2      ; prescaler div 16
+                BSET            TIE,#$10        ; enable timer interrupt 4
                 CLI                             ; enable interrupts
+                
+                ; enable the LEDs
+                BSR             LED_ENABLE
+                
+                ; loop forever (wait for interrupts)
+LOOP:           *
 
-                LDX             #0
-                
-                ; write to the SCI in a loop
-LOOP_WRITE_SCI:
-                LDAA            SCI0SR1         ; poll the SCI status register
-                ANDA            TDRE_bitmask    ; isolate the TDRE bit
-                BEQ             LOOP_WRITE_SCI  ; if TDRE is 0, keep looping
-                MOVB            #$41,SCI0DRL    ; write an A to the SCI
-                INX                             ; count how many times we've done this (debugging)
-                JSR             delay_1_sec     ; delay for about a second
-                BRA             LOOP_WRITE_SCI
-                
+OCISR:
+
+LED_ENABLE
+                MOVB            #$FF,DDRB
+                MOVB            #$FF,DDRJ
+                BCLR            PTJ,$02
+                CLR             PORTB
+                RTS
+
 ; ********************************************************************************
 ; SUBROUTINE: delay_1_sec
 ; ARGS: None
