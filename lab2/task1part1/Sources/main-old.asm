@@ -4,7 +4,6 @@
 ; GROUP:
 ; MEMBERS:
 ; DESCRIPTION: 
-; MODIFIED:
 ; ********************************************************************************
 
 ; export symbols
@@ -13,16 +12,6 @@
 
 ; Include derivative-specific definitions 
 		INCLUDE 'derivative.inc' 
-
-;**************************************************************
-;*                 Interrupt Vectors                          *
-;**************************************************************
-                ORG             $FFFE
-                DC.W            Entry           ; Reset Vector
-                
-; ISR config: Timer 4
-                ORG             $FFE6
-                DC.W            OCISR
                 
 ROMStart        EQU             $4000           
 PERIOD          EQU             32000
@@ -33,7 +22,6 @@ PERIOD          EQU             32000
 str1            FCB             "Bullshit string 1"
 str2            FCB             "second bullshit string"
 tmp             FCB             $00
-TOSEND          FCB             $00
 
 ; code section
                 ORG             ROMStart
@@ -43,20 +31,13 @@ _Startup:
                 LDS             #RAMEnd+1       ; initialize the stack pointer
                 CLI                             ; enable interrupts
                 
-                ; configure the timer system
-CONFIG          SEI                             ; disable all interrupts
-                MOVB            #$01,TCTL1      ; set up output to toggle
-                MOVB            #$10,TIOS       ; select channel 4 for output compare
-                MOVB            #$80,TSCR1      ; enable timers
-                MOVB            #$04,TSCR2      ; prescaler div 16
-                BSET            TIE,#$10        ; enable timer interrupt 4
+CONFIG          SEI
+                MOVB            #$01,TCTL1
+                MOVB            #$10,TIOS
+                MOVB            #$80,TSCR1
+                MOVB            #$04,TSCR2
+                BSET            TIE,#$10
                 CLI
-                
-                ; enable the LEDs
-                BSR             LED_ENABLE
-                
-                ; loop forever (wait for interrupts)
-LOOP:           *
 
 OCISR:
                 LDD             TCNT            ; get current count
@@ -77,3 +58,13 @@ LED_ENABLE
                 RTS
                 
 mainLoop:
+
+;**************************************************************
+;*                 Interrupt Vectors                          *
+;**************************************************************
+                ORG             $FFFE
+                DC.W            Entry           ; Reset Vector
+                
+; ISR config: Timer 4
+                ORG             $FFE6
+                DC.W            OCISR
