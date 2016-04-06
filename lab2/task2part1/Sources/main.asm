@@ -1,66 +1,71 @@
-;*****************************************************************
-;* This stationery serves as the framework for a                 *
-;* user application (single file, absolute assembly application) *
-;* For a more comprehensive program that                         *
-;* demonstrates the more advanced functionality of this          *
-;* processor, please see the demonstration applications          *
-;* located in the examples subdirectory of the                   *
-;* Freescale CodeWarrior for the HC12 Program directory          *
-;*****************************************************************
+; ********************************************************************************
+; MTRX2700 Lab 2
+; Task 2 Part 1: "Timer System"
+; GROUP:
+; MEMBERS:
+; DESCRIPTION: 
+; MODIFIED:
+; ********************************************************************************
 
 ; export symbols
-            XDEF Entry, _Startup            ; export 'Entry' symbol
-            ABSENTRY Entry        ; for absolute assembly: mark this as application entry point
-
-
+            XDEF                Entry, _Startup ; export 'Entry' symbol
+            ABSENTRY            Entry           ; for absolute assembly: mark this as application entry point
 
 ; Include derivative-specific definitions 
 		INCLUDE 'derivative.inc' 
 
-ROMStart    EQU  $4000  ; absolute address to place my code/constant data
-
-; variable/data section
-
-            ORG RAMStart
- ; Insert here your data definition.
-Counter     DS.W 1
-FiboRes     DS.W 1
-
-
-; code section
-            ORG   ROMStart
-
-
-Entry:
-_Startup:
-            LDS   #RAMEnd+1       ; initialize the stack pointer
-
-            CLI                     ; enable interrupts
-mainLoop:
-            LDX   #1              ; X contains counter
-couterLoop:
-            STX   Counter         ; update global.
-            BSR   CalcFibo
-            STD   FiboRes         ; store result
-            LDX   Counter
-            INX
-            CPX   #24             ; larger values cause overflow.
-            BNE   couterLoop
-            BRA   mainLoop        ; restart.
-
-CalcFibo:  ; Function to calculate fibonacci numbers. Argument is in X.
-            LDY   #$00            ; second last
-            LDD   #$01            ; last
-            DBEQ  X,FiboDone      ; loop once more (if X was 1, were done already)
-FiboLoop:
-            LEAY  D,Y             ; overwrite second last with new value
-            EXG   D,Y             ; exchange them -> order is correct again
-            DBNE  X,FiboLoop
-FiboDone:
-            RTS                   ; result in D
-
 ;**************************************************************
 ;*                 Interrupt Vectors                          *
 ;**************************************************************
-            ORG   $FFFE
-            DC.W  Entry           ; Reset Vector
+                ORG             $FFFE
+                DC.W            Entry           ; Reset Vector
+
+; ISR config - timer 4:
+                ORG             $FFE6
+                DC.W            isr_timer
+                
+ROMStart        EQU             $4000           
+TDRE_bitmask    EQU             $80
+
+; variable/data section
+                ORG             RAMStart
+
+
+; our data strings - terminated by a null character:
+str1            FCB             "first thingy",$00
+str2            FCB             "second thingy",$00
+
+; code section
+                ORG             ROMStart
+
+Entry:
+_Startup:
+                LDS             #RAMEnd+1       ; initialize the stack pointer
+                
+; configure the registers:
+                SEI                             ; disable all interrupts
+                MOVB            #$01,TCTL1      ; set up output to toggle
+                MOVB            #$10,TIOS       ; select channel 4 for output compare
+                MOVB            #$80,TSCR1      ; enable timers
+                MOVB            #$00,TSCR2      ; prescaler div 16
+                BSET            TIE,#$10        ; enable timer interrupt 4
+                CLI
+                
+ ; configure LED ports:
+                MOVB            #$FF,DDRB
+                MOVB            #$FF,DDRJ
+                MOVB            #$00,PTJ
+                MOVB            #$00,PORTB
+
+; loop forever
+loop            BRA             loop
+
+; ******************************************************************************** 
+; ISR: isr_timer
+; ********************************************************************************
+isr_timer:
+                LDD             TCNT            ; get current count
+                ADDD            #100            ; add a number to it
+                STD             TC4             ; reload TOC2
+                MOVB            #$10,TFLG1      ; reset the main timer interrupt flag
+                RTI
