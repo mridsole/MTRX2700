@@ -1,5 +1,5 @@
 ; ********************************************************************************
-; MTRX1702 LAB 1 
+; MTRX2700 LAB 1 
 ; Task 1 Part 4: "Writing Your Own Code"
 ; GROUP 6
 ; DESCRIPTION: flashes an LED at 0.5 Hz (1 second on, 1 second off)
@@ -8719,7 +8719,7 @@ main_loop:      LDAA            #LEDON          ; load accumulator with value fo
 ; SUBROUTINE: delay_1_sec
 ; ARGS: None
 ; waits exactly one second, using an outer and inner (nested) loop 
-; with predefined constants - see logboo         k for derivation
+; with predefined constants - see logbook for derivation
 ; (also uses a secondary smaller loop for fine tuning)
 ; ********************************************************************************
 delay_1_sec:

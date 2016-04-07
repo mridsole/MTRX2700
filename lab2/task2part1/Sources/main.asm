@@ -1,8 +1,8 @@
 ; ********************************************************************************
 ; MTRX2700 Lab 2
 ; Task 2 Part 1: "Timer System"
-; GROUP:
-; MEMBERS:
+; GROUP: 7
+; MEMBERS: 
 ; DESCRIPTION: 
 ; MODIFIED:
 ; ********************************************************************************
@@ -44,11 +44,13 @@ _Startup:
                 
 ; configure the registers:
                 SEI                             ; disable all interrupts
-                MOVB            #$01,TCTL1      ; set up output to toggle
+                MOVB            #$00,TCTL1      ; set up output to toggle
                 MOVB            #$10,TIOS       ; select channel 4 for output compare
                 MOVB            #$80,TSCR1      ; enable timers
                 MOVB            #$00,TSCR2      ; prescaler div 16
                 BSET            TIE,#$10        ; enable timer interrupt 4
+                MOVB            #$FF,DDRT
+                MOVB            #$01,PTT
                 CLI
                 
  ; configure LED ports:
@@ -65,7 +67,10 @@ loop            BRA             loop
 ; ********************************************************************************
 isr_timer:
                 LDD             TCNT            ; get current count
-                ADDD            #100            ; add a number to it
+                ADDD            #200            ; add a number to it
                 STD             TC4             ; reload TOC2
                 MOVB            #$10,TFLG1      ; reset the main timer interrupt flag
+                LDX             #30
+lp:             DEX             
+                BNE             lp
                 RTI
