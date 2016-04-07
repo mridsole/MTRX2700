@@ -8690,17 +8690,23 @@ mNVFSEC_KEYEN1:     equ    %10000000
 ; ISR config - timer 4:
                 ORG             $FFE6
                 DC.W            isr_timer
-                
-ROMStart        EQU             $4000           
-TDRE_bitmask    EQU             $80
 
+ROMStart        EQU             $4000
+
+; the PWM period, in cyles * 32 (after prescaling)
+PERIOD          EQU             53250
+                
 ; variable/data section
                 ORG             RAMStart
 
+; 0 = output signal is currently LOW
+; 1 = output signal is currently HIGH
+CYCLE_STATE     FCB             $01
 
-; our data strings - terminated by a null character:
-str1            FCB             "first thingy",$00
-str2            FCB             "second thingy",$00
+; store the prescaled cycles we have to jump
+; start with a square wave (so high time = low time)
+CYCLES_HIGH     FDB             26625
+CYCLES_LOW      FDB             26625
 
 ; code section
                 ORG             ROMStart
@@ -8709,35 +8715,73 @@ Entry:
 _Startup:
                 LDS             #RAMEnd+1       ; initialize the stack pointer
                 
-; configure the registers:
+; configure the timer system registers:
                 SEI                             ; disable all interrupts
+
                 MOVB            #$00,TCTL1      ; set up output to toggle
                 MOVB            #$10,TIOS       ; select channel 4 for output compare
                 MOVB            #$80,TSCR1      ; enable timers
                 MOVB            #$00,TSCR2      ; prescaler div 16
                 BSET            TIE,#$10        ; enable timer interrupt 4
-                MOVB            #$FF,DDRT
-                MOVB            #$01,PTT
-                CLI
                 
- ; configure LED ports:
-                MOVB            #$FF,DDRB
-                MOVB            #$FF,DDRJ
-                MOVB            #$00,PTJ
-                MOVB            #$00,PORTB
+                ; NOT SURE IF THIS IS NECESSARY - check on the actual board
+                MOVB            #$FF,DDRT       ; configure port T as output
 
-; loop forever
-loop            BRA             loop
+                CLI                             ; re-enable all interrupts
+                
+ ; configure DIP switches ports:
+                MOVB            #$00,DDRH       ; configure DIP switches as inputs
+
+; loop forever - keep polling the DIP switches for the duty cycle
+mainLoop:
+                LDAB            PTH
+                BSR             compute_duty_cycle
+                BRA             mainLoop
+
+; ******************************************************************************** 
+; SUBROUTINE: compute_duty_cycle
+; ARGS: B: the duty cycle, from 0-255
+; computes the number of cycles to wait during the HIGH and the LOW parts of 
+; the period (stores it in memory at CYCLES_HIGH and CYCLES_LOW)
+; ********************************************************************************
+compute_duty_cycle:
+                PSHA                            ; push A to stack in case it's in use
+                LDAA            #0              ; load 0 into A
+                LDY             #PERIOD         ; load the period into Y
+                EMUL                            ; extended multiply D and Y
+                LDX             #255            ; load 255 into X
+                EDIV                            ; extended divide Y:D by X
+                STY             CYCLES_HIGH     ; store the HIGH result
+                LDD             #PERIOD         ; load the period into D
+                SUBD            CYCLES_HIGH     ; subtract the HIGH result to obtain LOW
+                STD             CYCLES_LOW      ; store the LOW result
+                PULA                            ; pull A back from the stack
+                RTS                             ; return
+                
 
 ; ******************************************************************************** 
 ; ISR: isr_timer
 ; ********************************************************************************
 isr_timer:
-                LDD             TCNT            ; get current count
-                ADDD            #200            ; add a number to it
-                STD             TC4             ; reload TOC2
-                MOVB            #$10,TFLG1      ; reset the main timer interrupt flag
-                LDX             #30
-lp:             DEX             
-                BNE             lp
+                LDD             TCNT            ; load current timer count into D
+                LDAA            CYCLE_STATE     ; load the state of the cycle into A
+                CMPA            #$00            ; compare it with zero
+                BEQ             isr_timer_high  ; if 0, write high
+
+                ADDD            CYCLES_LOW
+                STD             TC4
+                MOVB            #$10,TFLG1
+                MOVB            #$00,PTT
+                MOVB            #$00,CYCLE_STATE
+                BRA             isr_timer_end
+
+isr_timer_high:
+                ADDD            CYCLES_HIGH     
+                STD             TC4
+                MOVB            #$10,TFLG1
+                MOVB            #$10,PTT
+                MOVB            #$01,CYCLE_STATE
+                BRA             isr_timer_end
+                
+isr_timer_end:
                 RTI
