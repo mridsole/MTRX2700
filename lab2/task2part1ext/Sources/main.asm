@@ -267,22 +267,30 @@ isr_sci_receive_end:
 ; ISR: isr_timer
 ; ********************************************************************************
 isr_timer:
-                LDD             TCNT            ; load current timer count into D
                 LDAA            CYCLE_STATE     ; load the state of the cycle into A
                 CMPA            #$00            ; compare it with zero
+                MOVB            #$10,TFLG1
                 BEQ             isr_timer_high  ; if 0, write high
 
-                ADDD            CYCLES_LOW
+                ; if the CYCLES_LOW is 0, then just return
+                LDD             CYCLES_LOW
+                CPD             #$00
+                BEQ             isr_timer_end
+
+                ADDD            TCNT
                 STD             TC4
-                MOVB            #$10,TFLG1
                 MOVB            #$00,PTT
                 MOVB            #$00,CYCLE_STATE
                 BRA             isr_timer_end
 
 isr_timer_high:
-                ADDD            CYCLES_HIGH     
+                ; if CYCLES_HIGH is 0, return
+                LDD             CYCLES_HIGH
+                CPD             #$00
+                BEQ             isr_timer_end
+
+                ADDD            TCNT
                 STD             TC4
-                MOVB            #$10,TFLG1
                 MOVB            #$10,PTT
                 MOVB            #$01,CYCLE_STATE
                 BRA             isr_timer_end

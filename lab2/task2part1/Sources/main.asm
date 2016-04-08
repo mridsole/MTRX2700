@@ -51,14 +51,17 @@ _Startup:
 ; configure the timer system registers:
                 SEI                             ; disable all interrupts
 
-                MOVB            #$00,TCTL1      ; set up output to toggle
+                MOVB            #$01,TCTL1      ; set up output to toggle
+                MOVB            #$00,TCTL2      ; 
                 MOVB            #$10,TIOS       ; select channel 4 for output compare
                 MOVB            #$80,TSCR1      ; enable timers
                 MOVB            #$00,TSCR2      ; prescaler div 16
                 BSET            TIE,#$10        ; enable timer interrupt 4
                 
                 ; NOT SURE IF THIS IS NECESSARY - check on the actual board
-                MOVB            #$FF,DDRT       ; configure port T as output
+                ;MOVB            #$FF,DDRT       ; configure port T as output
+
+                BCLR            OC7M,#$FF
 
                 CLI                             ; re-enable all interrupts
                 
@@ -104,7 +107,7 @@ isr_timer:
                 ADDD            CYCLES_LOW
                 STD             TC4
                 MOVB            #$10,TFLG1
-                MOVB            #$00,PTT
+                ;MOVB            #$00,PTT
                 MOVB            #$00,CYCLE_STATE
                 BRA             isr_timer_end
 
@@ -112,7 +115,7 @@ isr_timer_high:
                 ADDD            CYCLES_HIGH     
                 STD             TC4
                 MOVB            #$10,TFLG1
-                MOVB            #$10,PTT
+                ;MOVB            #$10,PTT
                 MOVB            #$01,CYCLE_STATE
                 BRA             isr_timer_end
                 
