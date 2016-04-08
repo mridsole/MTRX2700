@@ -52,7 +52,6 @@ config_sci      SEI                             ; disable all interrupts
 
                 ; complete SCI config by writing to the SCI control register 2
                 ; only use the transmission functionality (no interrupts)
-
                 MOVB            #$08,SCI1CR2
                 CLI                             ; enable interrupts
                 
