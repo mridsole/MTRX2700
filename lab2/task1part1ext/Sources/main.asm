@@ -1,6 +1,6 @@
 ; ********************************************************************************
 ; MTRX2700 Lab 2
-; Task 1 Part 1: "Serial Output'
+; Task 1 Part 1: "Serial Output" Extension
 ; GROUP:
 ; MEMBERS:
 ; DESCRIPTION: 

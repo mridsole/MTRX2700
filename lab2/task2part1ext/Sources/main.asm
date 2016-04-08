@@ -64,7 +64,7 @@ _Startup:
                 MOVB            #$00,TCTL1      ; set up output to toggle
                 MOVB            #$10,TIOS       ; select channel 4 for output compare
                 MOVB            #$80,TSCR1      ; enable timers
-                MOVB            #$00,TSCR2      ; prescaler div 16
+                MOVB            #$05,TSCR2      ; prescaler div 16
                 BSET            TIE,#$10        ; enable timer interrupt 4
                 
                 ; NOT SURE IF THIS IS NECESSARY - check on the actual board
@@ -76,10 +76,7 @@ _Startup:
                 MOVB            #$00,DDRH       ; configure DIP switches as inputs
 
 ; loop forever - keep polling the DIP switches for the duty cycle
-mainLoop:
-                LDAB            PTH
-                BSR             compute_duty_cycle
-                BRA             mainLoop
+mainLoop:       BRA             mainLoop
 
 ; ******************************************************************************** 
 ; SUBROUTINE: compute_duty_cycle
@@ -106,7 +103,8 @@ compute_duty_cycle:
 ; ********************************************************************************
 isr_sci_receive:
                 LDAA            SCI1SR1
-                LDAA            SCI1DRL
+                LDAB            SCI1DRL
+                JSR             compute_duty_cycle
                 RTI
 
 ; ******************************************************************************** 
