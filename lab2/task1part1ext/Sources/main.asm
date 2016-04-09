@@ -52,21 +52,17 @@ config_sci      SEI                             ; disable all interrupts
                 CLI                             ; enable interrupts
 
 LED_CONFIG:                                     ; configure the relevant LED ports
-                LDAA            #$FF
-                STAA            DDRB            ; configure port B (data bus) as an output
-                STAA            DDRJ            ; configure port J as an output
-                LDAA            #$00
-                STAA            PTJ             ; enable all of the LEDs
-
-                LDX             #0
+                MOVB            #$FF,DDRB       ; configure port B (data bus) as output
+                MOVB            #$FF,DDRJ       ; configure port J (LED selection) as output
+                MOVB            #$00,PTJ        ; select all LEDs
                 
                 ; write to the SCI in a loop
 LOOP_READ_SCI: 
                 LDAA            SCI1SR1         ; poll the SCI status register
                 ANDA            #RDRF_bitmask   ; isolate the RDRF bit
                 BEQ             LOOP_READ_SCI   ; if RDRF is 0, keep polling
-                INX                             ; ... debugging
-                LDAA            SCI1DRL         ; read some data in from the SCI
-                STAA            PORTB           ; write the data to the LEDs
+                MOVB            SCI1DRL,PORTB
+                ;LDAA            SCI1DRL         ; read some data in from the SCI
+                ;STAA            PORTB           ; write the data to the LEDs
                 BRA             LOOP_READ_SCI  ; keep looping
 
