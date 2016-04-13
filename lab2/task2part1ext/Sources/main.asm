@@ -33,6 +33,8 @@
 ROMStart        EQU             $4000
 
 TDRE_bitmask    EQU             $80
+PERIOD_DEL      EQU             750
+DC_DEL          EQU             1
 
 ; some ASCII references:
 ASCII_w         EQU             $77
@@ -210,36 +212,41 @@ isr_sci_receive_duty_cycle:
                 CMPB            #ASCII_CR
                 BEQ             isr_sci_receive_switch_adjust
 
+; increment the period
 isr_sci_receive_period_inc:
-                LDD             PERIOD
-                ADDD            #750
-                STD             PERIOD
+                LDD             PERIOD          ; add PERIOD_DEL to PERIOD
+                ADDD            #PERIOD_DEL
+                STD             PERIOD          ; and store it again
                 LDAB            DUTY_CYCLE_8
-                JSR             compute_duty_cycle
+                JSR             compute_duty_cycle  ; recompute the duty cycle
                 BRA             isr_sci_receive_end
 
+; decrement the period
 isr_sci_receive_period_dec:
-                LDD             PERIOD
-                SUBD            #750
-                STD             PERIOD
+                LDD             PERIOD          ; sub PERIOD_DEL from PERIOD
+                SUBD            #PERIOD_DEL
+                STD             PERIOD          ; and store it again
                 LDAB            DUTY_CYCLE_8
-                JSR             compute_duty_cycle
+                JSR             compute_duty_cycle  ; recompute the duty cycle
                 BRA             isr_sci_receive_end
 
+; increment the duty cycle
 isr_sci_receive_duty_cycle_inc:
                 LDAB            DUTY_CYCLE_8
-                ADDB            #$01
+                ADDB            #DC_DEL         ; add DC_DEL to the duty cycle
                 STAB            DUTY_CYCLE_8
-                JSR             compute_duty_cycle
+                JSR             compute_duty_cycle  ; and recompute it
                 BRA             isr_sci_receive_end
 
+; decrement the duty cycle
 isr_sci_receive_duty_cycle_dec:
                 LDAB            DUTY_CYCLE_8
-                SUBB            #$01
+                SUBB            #DC_DEL         ; sub DC_DEL from the duty cycle
                 STAB            DUTY_CYCLE_8
-                JSR             compute_duty_cycle
+                JSR             compute_duty_cycle  ; and recompute it
                 BRA             isr_sci_receive_end
 
+; 'Enter' was pressed: invert ADJUST_STATE
 isr_sci_receive_switch_adjust:
                 LDAA            ADJUST_STATE
                 EORA            #$01
@@ -248,20 +255,23 @@ isr_sci_receive_switch_adjust:
                 BEQ             isr_sci_receive_message_period
                 BNE             isr_sci_receive_message_duty_cycle
 
+; print the message for adjusting the period
 isr_sci_receive_message_period:
                 LDX             #period_str
                 BRA             isr_sci_receive_message_write
 
+; print the message for adjusting the duty cycle
 isr_sci_receive_message_duty_cycle:
                 LDX             #dc_str
 
+; write the message, then write the newline characters
 isr_sci_receive_message_write:
                 JSR             write_str_sci
                 JSR             write_newline_sci
                 BRA             isr_sci_receive_end
 
 isr_sci_receive_end:
-                RTI
+                RTI                             ; return
 
 ; ******************************************************************************** 
 ; ISR: isr_timer
@@ -273,27 +283,27 @@ isr_timer:
                 BEQ             isr_timer_high  ; if 0, write high
 
                 ; if the CYCLES_LOW is 0, then just return
-                LDD             CYCLES_LOW
-                CPD             #$00
-                BEQ             isr_timer_end
+                LDD             CYCLES_LOW      ; load CYCLES_LOW into D, so we can compare it
+                CPD             #$00            ; perform the comparison
+                BEQ             isr_timer_end   ; branch if CYCLES_LOW does equal 0
 
-                ADDD            TCNT
-                STD             TC4
-                MOVB            #$00,PTT
-                MOVB            #$00,CYCLE_STATE
-                BRA             isr_timer_end
+                ADDD            TCNT            ; otherwise, add CYCLES_LOW to TCNT
+                STD             TC4             ; and write the result to TC4
+                MOVB            #$00,PTT        ; write LOW to PTT
+                MOVB            #$00,CYCLE_STATE  ; switch CYCLE_STATE from 1 to 0
+                BRA             isr_timer_end   ; return
 
 isr_timer_high:
                 ; if CYCLES_HIGH is 0, return
-                LDD             CYCLES_HIGH
-                CPD             #$00
-                BEQ             isr_timer_end
+                LDD             CYCLES_HIGH     ; load CYCLES_HIGH into D, so we can compare it
+                CPD             #$00            ; perform the comparison with 0
+                BEQ             isr_timer_end   ; if CYCLES_HIGH = 0, just return
 
-                ADDD            TCNT
-                STD             TC4
-                MOVB            #$10,PTT
-                MOVB            #$01,CYCLE_STATE
-                BRA             isr_timer_end
+                ADDD            TCNT            ; otherwise, add CYCLES_HIGH to TCNT
+                STD             TC4             ; and write the result to TC4
+                MOVB            #$10,PTT        ; write HIGH to pin 4 of PTT
+                MOVB            #$01,CYCLE_STATE  ; switch CYCLE_STATE from 0 to 1
+                BRA             isr_timer_end   ; return
                 
 isr_timer_end:
-                RTI
+                RTI                             ; return

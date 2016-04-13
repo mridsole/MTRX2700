@@ -65,4 +65,3 @@ LOOP_READ_SCI:
                 BEQ             LOOP_READ_SCI   ; if RDRF is 0, keep polling
                 MOVB            SCI1DRL,PORTB   ; write the data to the LEDs
                 BRA             LOOP_READ_SCI   ; keep looping
-
