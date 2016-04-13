@@ -8686,7 +8686,6 @@ mNVFSEC_KEYEN1:     equ    %10000000
 ;**************************************************************
                 ORG             $FFFE
                 DC.W            Entry           ; Reset Vector
-
 ; ISR config - timer 4:
                 ORG             $FFE6
                 DC.W            isr_timer
@@ -8722,7 +8721,7 @@ _Startup:
                 MOVB            #$00,TCTL2      ; 
                 MOVB            #$10,TIOS       ; select channel 4 for output compare
                 MOVB            #$80,TSCR1      ; enable timers
-                MOVB            #$00,TSCR2      ; prescaler div 16
+                MOVB            #$05,TSCR2      ; prescaler div 32
                 BSET            TIE,#$10        ; enable timer interrupt 4
                 
                 ; NOT SURE IF THIS IS NECESSARY - check on the actual board
@@ -8737,7 +8736,7 @@ _Startup:
 
 ; loop forever - keep polling the DIP switches for the duty cycle
 mainLoop:
-                LDAB            PTH
+                LDAB            #$00
                 BSR             compute_duty_cycle
                 BRA             mainLoop
 
@@ -8766,23 +8765,31 @@ compute_duty_cycle:
 ; ISR: isr_timer
 ; ********************************************************************************
 isr_timer:
-                LDD             TCNT            ; load current timer count into D
                 LDAA            CYCLE_STATE     ; load the state of the cycle into A
                 CMPA            #$00            ; compare it with zero
+                MOVB            #$10,TFLG1      ; clear the channel 4 timer flag
                 BEQ             isr_timer_high  ; if 0, write high
 
-                ADDD            CYCLES_LOW
+                ; if the CYCLES_LOW is 0, then just return
+                LDD             CYCLES_LOW
+                CPD             #$00
+                BEQ             isr_timer_end
+
+                ADDD            TCNT
                 STD             TC4
-                MOVB            #$10,TFLG1
-                ;MOVB            #$00,PTT
+                MOVB            #$00,PTT
                 MOVB            #$00,CYCLE_STATE
                 BRA             isr_timer_end
 
 isr_timer_high:
-                ADDD            CYCLES_HIGH     
+                ; if CYCLES_HIGH is 0, return
+                LDD             CYCLES_HIGH
+                CPD             #$00
+                BEQ             isr_timer_end
+
+                ADDD            TCNT
                 STD             TC4
-                MOVB            #$10,TFLG1
-                ;MOVB            #$10,PTT
+                MOVB            #$10,PTT
                 MOVB            #$01,CYCLE_STATE
                 BRA             isr_timer_end
                 

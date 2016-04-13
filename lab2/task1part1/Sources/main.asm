@@ -1,10 +1,12 @@
 ; ********************************************************************************
 ; MTRX2700 Lab 2
 ; Task 1 Part 1: "Serial Output'
-; GROUP:
-; MEMBERS:
-; DESCRIPTION: 
-; MODIFIED:
+; GROUP: 7
+; MEMBERS: Xinzan Guo, David Rapisarda, Thomas T. Cooper, Hughson Xu
+; DESCRIPTION: Sends two alternating strings to the serial port at a rate of 
+;               one string per second. Prints each string on a new line.
+; MODIFIED: 10:00 13/04/2016 
+;               (added more detailed header information)
 ; ********************************************************************************
 
 ; export symbols

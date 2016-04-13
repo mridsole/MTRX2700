@@ -1,10 +1,12 @@
 ; ********************************************************************************
 ; MTRX2700 Lab 2
 ; Task 1 Part 1: "Serial Output" Extension
-; GROUP:
-; MEMBERS:
-; DESCRIPTION: 
-; MODIFIED:
+; GROUP: 7
+; MEMBERS: Xinzan Guo, David Rapisarda, Thomas T. Cooper, Hughson Xu
+; DESCRIPTION: Continuously polls the serial port and sends character data to the
+;               LEDs as soon as it is received.
+; MODIFIED: 10:00 13/04/2016
+;               (added more detailed header information)
 ; ********************************************************************************
 
 ; export symbols
@@ -61,8 +63,6 @@ LOOP_READ_SCI:
                 LDAA            SCI1SR1         ; poll the SCI status register
                 ANDA            #RDRF_bitmask   ; isolate the RDRF bit
                 BEQ             LOOP_READ_SCI   ; if RDRF is 0, keep polling
-                MOVB            SCI1DRL,PORTB
-                ;LDAA            SCI1DRL         ; read some data in from the SCI
-                ;STAA            PORTB           ; write the data to the LEDs
-                BRA             LOOP_READ_SCI  ; keep looping
+                MOVB            SCI1DRL,PORTB   ; write the data to the LEDs
+                BRA             LOOP_READ_SCI   ; keep looping
 

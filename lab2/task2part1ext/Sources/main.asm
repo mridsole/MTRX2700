@@ -2,9 +2,13 @@
 ; MTRX2700 Lab 2
 ; Task 2 Part 1: "Timer System" Extension
 ; GROUP: 7
-; MEMBERS: 
-; DESCRIPTION: 
-; MODIFIED:
+; MEMBERS: Xinzan Guo, David Rapisarda, Thomas T. Cooper, Hughson Xu
+; DESCRIPTION: Generates a PWM signal, where both the period and the duty cycle
+;               can be adjusted using the serial communications interface. The
+;               'Enter' key switches between adjusting the period and duty cycle,
+;               and the 'w' and 's' keys increase and decrease the selected value.
+; MODIFIED: 10:00 13/04/2016
+;               (added more detailed header information)
 ; ********************************************************************************
 
 ; export symbols
@@ -27,10 +31,6 @@
                 DC.W            isr_sci_receive
 
 ROMStart        EQU             $4000
-
-; min/max period (in prescaled cycles):
-PERIOD_MIN      EQU             1500            ; 2 ms (cycles after prescale by 32)
-PERIOD_MAX      EQU             60000           ; 80 ms (cycles after prescale by 32)
 
 TDRE_bitmask    EQU             $80
 
@@ -269,7 +269,7 @@ isr_sci_receive_end:
 isr_timer:
                 LDAA            CYCLE_STATE     ; load the state of the cycle into A
                 CMPA            #$00            ; compare it with zero
-                MOVB            #$10,TFLG1
+                MOVB            #$10,TFLG1      ; clear the channel 4 timer flag
                 BEQ             isr_timer_high  ; if 0, write high
 
                 ; if the CYCLES_LOW is 0, then just return
