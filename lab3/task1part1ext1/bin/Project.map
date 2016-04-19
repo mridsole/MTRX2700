@@ -25,7 +25,7 @@ _startupData is allocated at 0xC031 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x1100     10
-  _Copy    *toCopyDownBeg 0xC117
+  _Copy    *toCopyDownBeg 0xC0F2
 } _startupData;
 
 *********************************************************************************************
@@ -34,8 +34,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             49     R     0xC000     0xC030   ROM_C000
 .startData                        10     R     0xC031     0xC03A   ROM_C000
-.text                            202     R     0xC03B     0xC104   ROM_C000
-.copy                             16     R     0xC117     0xC126   ROM_C000
+.text                            165     R     0xC03B     0xC0DF   ROM_C000
+.copy                             16     R     0xC0F2     0xC101   ROM_C000
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .data                             10   R/W     0x1100     0x1109   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -379,11 +379,11 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg338
 .abs_section_2ae                   2   N/I      0x2AE      0x2AF   .absSeg339
 .abs_section_2be                   2   N/I      0x2BE      0x2BF   .absSeg340
-RUNTIME                           18     R     0xC105     0xC116   ROM_C000
+RUNTIME                           18     R     0xC0E0     0xC0F1   ROM_C000
 .vectSeg341_vect                   2     R     0xFFFE     0xFFFF   .vectSeg341
 
 Summary of section sizes per section type:
-READ_ONLY (R):         129 (dec:      297)
+READ_ONLY (R):         104 (dec:      260)
 READ_WRITE (R/W):      10A (dec:      266)
 NO_INIT (N/I):         190 (dec:      400)
 
@@ -747,12 +747,12 @@ MODULE:                 -- main.c.o --
      config_ADC                                C044       C      12       1   .text       
      config_7seg                               C050       8       8       1   .text       
      clear_7seg                                C058       7       7       1   .text       
-     write_7seg                                C05F      12      18       3   .text       
+     write_7seg                                C05F      12      18       1   .text       
      get_digits                                C071      21      33       1   .text       
-     main_loop                                 C092      69     105       1   .text       
-     main                                      C0FB       A      10       1   .text       
+     main_loop                                 C092      44      68       1   .text       
+     main                                      C0D6       A      10       1   .text       
 - VARIABLES:
-     seg_lookup                                1100       A      10       3   .data       
+     seg_lookup                                1100       A      10       1   .data       
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
      Init                                      C000      29      41       1   .init       
@@ -763,8 +763,8 @@ MODULE:                 -- Start12.c.o --
      __SEG_END_SSTACK                          1100       0       0       1               
 MODULE:                 -- rtshc12.c.o (ansisi.lib) --
 - PROCEDURES:
-     _BSHL                                     C105       8       8       1   RUNTIME     
-     _BDIVMODU                                 C10D       A      10       2   RUNTIME     
+     _BSHL                                     C0E0       8       8       1   RUNTIME     
+     _BDIVMODU                                 C0E8       A      10       2   RUNTIME     
 - VARIABLES:
 
 *********************************************************************************************
@@ -772,7 +772,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   mc9s12dg256.c.o                            400      0      0
-  main.c.o                                    10    202      0
+  main.c.o                                    10    165      0
   Start12.c.o                                  0     49      0
   rtshc12.c.o (ansisi.lib)                     0     18      0
   other                                      256     12     16
@@ -1817,19 +1817,19 @@ OBJECT LIST SORTED BY ADDRESS
      _CAN4TXDLR                                 2BC       1       1       0   .abs_section_2bc
      _CAN4TXTBPR                                2BD       1       1       0   .abs_section_2bd
      _CAN4TXTSR                                 2BE       2       2       0   .abs_section_2be
-     seg_lookup                                1100       A      10       3   .data       
+     seg_lookup                                1100       A      10       1   .data       
      Init                                      C000      29      41       1   .init       
      _Startup                                  C029       8       8       0   .init       
      delay_small                               C03B       9       9       1   .text       
      config_ADC                                C044       C      12       1   .text       
      config_7seg                               C050       8       8       1   .text       
      clear_7seg                                C058       7       7       1   .text       
-     write_7seg                                C05F      12      18       3   .text       
+     write_7seg                                C05F      12      18       1   .text       
      get_digits                                C071      21      33       1   .text       
-     main_loop                                 C092      69     105       1   .text       
-     main                                      C0FB       A      10       1   .text       
-     _BSHL                                     C105       8       8       1   RUNTIME     
-     _BDIVMODU                                 C10D       A      10       2   RUNTIME     
+     main_loop                                 C092      44      68       1   .text       
+     main                                      C0D6       A      10       1   .text       
+     _BSHL                                     C0E0       8       8       1   RUNTIME     
+     _BDIVMODU                                 C0E8       A      10       2   RUNTIME     
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -1849,13 +1849,13 @@ rtshc12.c.o (ansisi.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC117 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC0F2 ---- SIZE       4 ---
 Filling bytes inserted
  000A1100
-------- ROM-ADDRESS: 0xC11B ---- RAM-ADDRESS: 0x1100 ---- SIZE      10 ---
+------- ROM-ADDRESS: 0xC0F6 ---- RAM-ADDRESS: 0x1100 ---- SIZE      10 ---
 Name of initialized Object : seg_lookup
  3F065B4F66 6D7D077F6F
-------- ROM-ADDRESS: 0xC125 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC100 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1869,8 +1869,8 @@ config_7seg               USES _DDRP _DDRAB
 clear_7seg                USES _PTP _PORTAB 
 write_7seg                USES _BSHL _PTP _PORTAB 
 get_digits                USES _BDIVMODU 
-main_loop                 USES seg_lookup write_7seg _ATD0CTL45 _ATD0STAT0 
-                                _ATD0DR7 delay_small clear_7seg get_digits 
+main_loop                 USES _ATD0CTL45 _ATD0STAT0 _ATD0DR7 get_digits 
+                                seg_lookup write_7seg delay_small clear_7seg 
 main                      USES config_ADC config_7seg main_loop 
 
 *********************************************************************************************
@@ -1886,6 +1886,10 @@ DEPENDENCY TREE
  |  |    
  |  +- main_loop           
  |     | 
+ |     +- get_digits          
+ |     |  | 
+ |     |  +- _BDIVMODU           
+ |     |       
  |     +- write_7seg          
  |     |  | 
  |     |  +- _BSHL               
@@ -1893,11 +1897,7 @@ DEPENDENCY TREE
  |     +- delay_small         
  |     |    
  |     +- clear_7seg          
- |     |    
- |     +- get_digits          
- |        | 
- |        +- _BDIVMODU           
- |             
+ |          
  +- _Startup            
     | 
     +- Init                
@@ -1911,5 +1911,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 6
-Total size of all blocks to be downloaded: 297
+Total size of all blocks to be downloaded: 260
 
