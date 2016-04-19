@@ -1,7 +1,14 @@
+/* ********************************************************************************
+	MTRX2700 Lab 3
+	TASK 1 PART 1: "Analog Input"
+	GROUP: ??
+	MEMBERS: ???
+	DESCRIPTION: does a thing
+	MODIFIED: yer
+******************************************************************************** */
+
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
-
-#include "main_asm.h" /* interface to the assembly module */
 
 // configure the ADC subsystem
 void config_ADC(void) {
