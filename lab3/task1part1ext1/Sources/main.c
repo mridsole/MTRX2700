@@ -94,7 +94,7 @@ void main_loop(void) {
 	while (!(ATD0STAT0 & 0x80)) {}
 
 	// get the digits from the thing
-	get_digits(ATD0DR7L, digits);
+	get_digits(ATD0DR0L, digits);
 	
 	// write the digits to the segs
 	for (i = 0; i < 2; i++) {

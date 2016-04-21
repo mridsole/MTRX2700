@@ -62,7 +62,7 @@ void main_loop(void) {
 	while (!(ATD0STAT0 & 0x80)) {}
 
 	// write transformed data to LEDs
-	PORTB = LED_bar(ATD0DR7L);
+	PORTB = LED_bar(ATD0DR0L);
 
 	// clear the conversion complete flag (this should happen automatically?)
 	ATD0STAT0 = 0x00;

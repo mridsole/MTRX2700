@@ -25,7 +25,7 @@ _startupData is allocated at 0xC031 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x1100     6
-  _Copy    *toCopyDownBeg 0xC1A2
+  _Copy    *toCopyDownBeg 0xC1B0
 } _startupData;
 
 *********************************************************************************************
@@ -34,8 +34,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             49     R     0xC000     0xC030   ROM_C000
 .startData                        10     R     0xC031     0xC03A   ROM_C000
-.text                            330     R     0xC03B     0xC184   ROM_C000
-.copy                              9     R     0xC1A2     0xC1AA   ROM_C000
+.text                            344     R     0xC03B     0xC192   ROM_C000
+.copy                              9     R     0xC1B0     0xC1B8   ROM_C000
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .data                              3   R/W     0x1100     0x1102   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -382,11 +382,11 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_ffd4                  2     R     0xFFD4     0xFFD5   .absSeg341
 .abs_section_ffe6                  2     R     0xFFE6     0xFFE7   .absSeg342
 .bss                               3   R/W     0x1103     0x1105   RAM
-RUNTIME                           29     R     0xC185     0xC1A1   ROM_C000
+RUNTIME                           29     R     0xC193     0xC1AF   ROM_C000
 .vectSeg343_vect                   2     R     0xFFFE     0xFFFF   .vectSeg343
 
 Summary of section sizes per section type:
-READ_ONLY (R):         1B1 (dec:      433)
+READ_ONLY (R):         1BF (dec:      447)
 READ_WRITE (R/W):      106 (dec:      262)
 NO_INIT (N/I):         190 (dec:      400)
 
@@ -450,9 +450,9 @@ MODULE:                 -- mc9s12dg256.c.o --
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
-     _TIE                                        4C       1       1       0   .abs_section_4c
+     _TIE                                        4C       1       1       1   .abs_section_4c
      _TSCR2                                      4D       1       1       1   .abs_section_4d
-     _TFLG1                                      4E       1       1       0   .abs_section_4e
+     _TFLG1                                      4E       1       1       1   .abs_section_4e
      _TFLG2                                      4F       1       1       0   .abs_section_4f
      _PACTL                                      60       1       1       0   .abs_section_60
      _PAFLG                                      61       1       1       0   .abs_section_61
@@ -688,12 +688,12 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PORTAB                                      0       2       2       2   .abs_section_0
      _DDRAB                                       2       2       2       1   .abs_section_2
      _PARTID                                     1A       2       2       0   .abs_section_1a
-     _TCNT                                       44       2       2       0   .abs_section_44
+     _TCNT                                       44       2       2       1   .abs_section_44
      _TC0                                        50       2       2       0   .abs_section_50
      _TC1                                        52       2       2       0   .abs_section_52
      _TC2                                        54       2       2       0   .abs_section_54
      _TC3                                        56       2       2       0   .abs_section_56
-     _TC4                                        58       2       2       0   .abs_section_58
+     _TC4                                        58       2       2       1   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
      _TC7                                        5E       2       2       0   .abs_section_5e
@@ -748,16 +748,16 @@ MODULE:                 -- main.c.o --
 - PROCEDURES:
      delay_small                               C03B       9       9       1   .text       
      config_SCI                                C044       E      14       1   .text       
-     config_ECT                                C052       F      15       1   .text       
-     config_7seg                               C061       8       8       1   .text       
-     clear_7seg                                C069       7       7       2   .text       
-     write_7seg                                C070      12      18       1   .text       
-     get_digits_dec                            C082      31      49       1   .text       
-     get_digits_hex                            C0B3      28      40       1   .text       
-     main_loop                                 C0DB      43      67       1   .text       
-     main                                      C11E      16      22       1   .text       
-     SCI1_ISR                                  C134      28      40       1   .text       
-     TC4_ISR                                   C15C      29      41       1   .text       
+     config_ECT                                C052      13      19       1   .text       
+     config_7seg                               C065       8       8       1   .text       
+     clear_7seg                                C06D       7       7       2   .text       
+     write_7seg                                C074      12      18       1   .text       
+     get_digits_dec                            C086      2C      44       1   .text       
+     get_digits_hex                            C0B2      28      40       1   .text       
+     main_loop                                 C0DA      47      71       1   .text       
+     main                                      C121      16      22       1   .text       
+     SCI1_ISR                                  C137      28      40       1   .text       
+     TC4_ISR                                   C15F      34      52       1   .text       
 - VARIABLES:
      disp_interval_scale                       1100       1       1       2   .data       
      disp_num                                  1101       2       2       5   .data       
@@ -775,9 +775,9 @@ MODULE:                 -- Start12.c.o --
      __SEG_END_SSTACK                          1100       0       0       1               
 MODULE:                 -- rtshc12.c.o (ansisi.lib) --
 - PROCEDURES:
-     _BSHL                                     C185       8       8       1   RUNTIME     
-     _BDIVMODU                                 C18D       A      10       1   RUNTIME     
-     _ISHRU                                    C197       B      11       1   RUNTIME     
+     _BSHL                                     C193       8       8       1   RUNTIME     
+     _BDIVMODU                                 C19B       A      10       1   RUNTIME     
+     _ISHRU                                    C1A5       B      11       1   RUNTIME     
 - VARIABLES:
 
 *********************************************************************************************
@@ -785,7 +785,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   mc9s12dg256.c.o                            400      0      0
-  main.c.o                                     6    330      4
+  main.c.o                                     6    344      4
   Start12.c.o                                  0     49      0
   rtshc12.c.o (ansisi.lib)                     0     29      0
   other                                      256     12      9
@@ -1539,22 +1539,22 @@ OBJECT LIST SORTED BY ADDRESS
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
-     _TCNT                                       44       2       2       0   .abs_section_44
+     _TCNT                                       44       2       2       1   .abs_section_44
      _TSCR1                                      46       1       1       1   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       1   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
-     _TIE                                        4C       1       1       0   .abs_section_4c
+     _TIE                                        4C       1       1       1   .abs_section_4c
      _TSCR2                                      4D       1       1       1   .abs_section_4d
-     _TFLG1                                      4E       1       1       0   .abs_section_4e
+     _TFLG1                                      4E       1       1       1   .abs_section_4e
      _TFLG2                                      4F       1       1       0   .abs_section_4f
      _TC0                                        50       2       2       0   .abs_section_50
      _TC1                                        52       2       2       0   .abs_section_52
      _TC2                                        54       2       2       0   .abs_section_54
      _TC3                                        56       2       2       0   .abs_section_56
-     _TC4                                        58       2       2       0   .abs_section_58
+     _TC4                                        58       2       2       1   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
      _TC7                                        5E       2       2       0   .abs_section_5e
@@ -1844,19 +1844,19 @@ OBJECT LIST SORTED BY ADDRESS
      _Startup                                  C029       8       8       0   .init       
      delay_small                               C03B       9       9       1   .text       
      config_SCI                                C044       E      14       1   .text       
-     config_ECT                                C052       F      15       1   .text       
-     config_7seg                               C061       8       8       1   .text       
-     clear_7seg                                C069       7       7       2   .text       
-     write_7seg                                C070      12      18       1   .text       
-     get_digits_dec                            C082      31      49       1   .text       
-     get_digits_hex                            C0B3      28      40       1   .text       
-     main_loop                                 C0DB      43      67       1   .text       
-     main                                      C11E      16      22       1   .text       
-     SCI1_ISR                                  C134      28      40       1   .text       
-     TC4_ISR                                   C15C      29      41       1   .text       
-     _BSHL                                     C185       8       8       1   RUNTIME     
-     _BDIVMODU                                 C18D       A      10       1   RUNTIME     
-     _ISHRU                                    C197       B      11       1   RUNTIME     
+     config_ECT                                C052      13      19       1   .text       
+     config_7seg                               C065       8       8       1   .text       
+     clear_7seg                                C06D       7       7       2   .text       
+     write_7seg                                C074      12      18       1   .text       
+     get_digits_dec                            C086      2C      44       1   .text       
+     get_digits_hex                            C0B2      28      40       1   .text       
+     main_loop                                 C0DA      47      71       1   .text       
+     main                                      C121      16      22       1   .text       
+     SCI1_ISR                                  C137      28      40       1   .text       
+     TC4_ISR                                   C15F      34      52       1   .text       
+     _BSHL                                     C193       8       8       1   RUNTIME     
+     _BDIVMODU                                 C19B       A      10       1   RUNTIME     
+     _ISHRU                                    C1A5       B      11       1   RUNTIME     
      _Vector_21                                FFD4       2       2       0   .abs_section_ffd4
      _Vector_12                                FFE6       2       2       0   .abs_section_ffe6
 
@@ -1879,16 +1879,16 @@ rtshc12.c.o (ansisi.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC1A2 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC1B0 ---- SIZE       4 ---
 Filling bytes inserted
  00031100
-------- ROM-ADDRESS: 0xC1A6 ---- RAM-ADDRESS: 0x1100 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC1B4 ---- RAM-ADDRESS: 0x1100 ---- SIZE       1 ---
 Name of initialized Object : disp_interval_scale
  01
-------- ROM-ADDRESS: 0xC1A7 ---- RAM-ADDRESS: 0x1101 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC1B5 ---- RAM-ADDRESS: 0x1101 ---- SIZE       2 ---
 Name of initialized Object : disp_num
  8AFE
-------- ROM-ADDRESS: 0xC1A9 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC1B7 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1898,7 +1898,7 @@ OBJECT-DEPENDENCIES SECTION
 Init                      USES _startupData 
 _Startup                  USES __SEG_END_SSTACK Init main 
 config_SCI                USES _SCI1BD _SCI1CR1 _SCI1CR2 
-config_ECT                USES _TCTL1 _TIOS _TSCR1 _TSCR2 
+config_ECT                USES _TCTL1 _TIOS _TSCR1 _TSCR2 _TIE 
 config_7seg               USES _DDRP _DDRAB 
 clear_7seg                USES _PTP _PORTAB 
 write_7seg                USES _BSHL _PTP _PORTAB 
@@ -1908,8 +1908,8 @@ main_loop                 USES display_mode disp_num get_digits_dec
 main                      USES config_SCI config_ECT config_7seg clear_7seg 
                                 main_loop 
 SCI1_ISR                  USES _SCI1DRL display_mode disp_interval_scale 
-TC4_ISR                   USES disp_interval_count disp_interval_scale 
-                                _BDIVMODU disp_num display_mode 
+TC4_ISR                   USES _TCNT _TC4 _TFLG1 disp_interval_count 
+                                disp_interval_scale _BDIVMODU disp_num display_mode 
 _Vector_21                USES SCI1_ISR 
 _Vector_12                USES TC4_ISR 
 
@@ -1966,6 +1966,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 8
-Total size of all blocks to be downloaded: 433
+Number of blocks to be downloaded: 7
+Total size of all blocks to be downloaded: 447
 

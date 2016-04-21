@@ -65,8 +65,8 @@ interrupt 21 void SCI1_ISR(void) {
 	// if a character is ready to send, send one off the stack
 	if (SCI1SR1 & 0x40) {
 		if (send_stack_pos > 0) {
-			SCI1DRL = send_stack[send_stack_pos];
 			send_stack_pos--;
+			SCI1DRL = send_stack[send_stack_pos];
 		}
 	}
 

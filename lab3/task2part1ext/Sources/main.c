@@ -11,7 +11,7 @@
 #include "derivative.h"      /* derivative-specific definitions */
 
 // 7seg lookup table
-char seg_lookup[16] = { 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 
+char seg_lookup[] = { 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 
 	0x6F, 0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71 };
 
 // with a prescaler of 128, 0.2 seconds is 37500
@@ -68,6 +68,7 @@ void config_ECT(void) {
 
 	// prescaler 128
 	TSCR2 = 0x07;
+	TIE = 0x10;
 }
 
 // configure the 7 segment display
@@ -133,7 +134,7 @@ void main_loop(void) {
 	// display on the 7 segs
 	// assuming digits is in reverse order
 	for (i = 0; i < 4; i++) {
-		write_7seg(i, digits[i]);
+		write_7seg(3 - i, digits[i]);
 		delay_small();
 		clear_7seg();
 	}
@@ -190,7 +191,7 @@ interrupt 12 void TC4_ISR(void) {
 	TFLG1 = 0x10;   // clear the channel 4 flag
 	
 	disp_interval_count++;
-	if (disp_interval_count % disp_interval_scale) {
+	if (disp_interval_count % disp_interval_scale == 0) {
 		disp_num++;
 		if (display_mode == DISPLAY_DEC && disp_num > 9999) {
 			disp_num = 0;
