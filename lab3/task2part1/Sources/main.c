@@ -1,10 +1,12 @@
 /* ********************************************************************************
 	MTRX2700 Lab 3
 	TASK 2 PART 1: "Serial IO (again)"
-	GROUP: ??
-	MEMBERS: ???
-	DESCRIPTION: does a thing
-	MODIFIED: yer
+	GROUP: 5
+	MEMBERS: John Sumskas, Justin Ko, Jasmine Chen, Jacqui Dielwart, David Rapisarda
+	DESCRIPTION: whenever a character is sent to the SCI, "0xXY data received" is
+		sent back. Maintains a stack buffer in order to respond to quickly incoming 
+		data
+	MODIFIED: 26/04/2016
 ******************************************************************************** */
 
 #include <hidef.h>      /* common defines and macros */
@@ -58,7 +60,7 @@ void get_ascii_hex(char val, unsigned char* digits) {
 	for (i = 0; i < 2; i++) {
 	
 		// get the actual value of the digit
-		digits[i] = (unsigned char)((val >> (unsigned char)(4 * i)) & 0x0F);
+		digits[i] = (unsigned char)((val >> (4 * i)) & 0x0F);
 		
 		// get the ASCII of the value - see ASCII table to see how this works
 		digits[i] += (digits[i] < 10) ? 48 : 87;

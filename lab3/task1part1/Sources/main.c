@@ -1,10 +1,11 @@
 /* ********************************************************************************
 	MTRX2700 Lab 3
 	TASK 1 PART 1: "Analog Input"
-	GROUP: ??
-	MEMBERS: ???
-	DESCRIPTION: does a thing
-	MODIFIED: yer
+	GROUP: 5
+	MEMBERS: John Sumskas, Justin Ko, Jasmine Chen, Jacqui Dielwart, David Rapisarda
+	DESCRIPTION: Reads the voltage on pin PAD7, and displays the scaled value on the
+		8 LEDs. 
+	MODIFIED: 26/04/2016
 ******************************************************************************** */
 
 #include <hidef.h>      /* common defines and macros */

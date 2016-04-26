@@ -1,10 +1,11 @@
 /* ********************************************************************************
 	MTRX2700 Lab 3
 	TASK 1 PART 1 EXTENSION 1: "Analog Input"
-	GROUP: ??
-	MEMBERS: ???
-	DESCRIPTION: does a thing
-	MODIFIED: yer
+	GROUP: 5
+	MEMBERS: John Sumskas, Justin Ko, Jasmine Chen, Jacqui Dielwart, David Rapisarda
+	DESCRIPTION: Reads the voltage on pin PAD7 and writes the voltage to the seven
+		segment display, using 2 digits. (Values range from 0.0 V to 5.0 V)
+	MODIFIED: 26/04/2016
 ******************************************************************************** */
 
 #include <hidef.h>      /* common defines and macros */

@@ -1,10 +1,13 @@
 /* ********************************************************************************
 	MTRX2700 Lab 3
-	TASK 2 PART 1: "Serial IO (again)"
-	GROUP: ??
-	MEMBERS: ???
-	DESCRIPTION: does a thing
-	MODIFIED: yer
+	TASK 2 PART 1: "Serial IO (again)" Extension
+	GROUP: 5
+	MEMBERS: John Sumskas, Justin Ko, Jasmine Chen, Jacqui Dielwart, David Rapisarda
+	DESCRIPTION: Counts from 0 to 9999, or to 0xFFFF, and displays the current count
+		on the 7 segment displays. Uses SCI input to change between decimal and hex,
+		and also to adjust the speed ('0': fastest, 1 count per 0.2 seconds, '9':
+		slowest, 1 count per 2 seconds)
+	MODIFIED: 26/04/2016
 ******************************************************************************** */
 
 #include <hidef.h>      /* common defines and macros */
