@@ -32,6 +32,22 @@ void config_SCI(void) {
 	return;
 }
 
+// get the 2 ASCII hex digits from an 8 bit value
+void get_ascii_hex(char val, unsigned char* digits) {
+	
+	unsigned char i;
+	for (i = 0; i < 2; i++) {
+	
+		// get the actual value of the digit
+		digits[i] = (unsigned char)((val >> (4 * i)) & 0x0F);
+		
+		// get the ASCII of the value - see ASCII table to see how this works
+		digits[i] += (digits[i] < 10) ? 48 : 87;
+	}
+
+	return;
+}
+
 void main_loop(void) {
 	
 	// this one's entirely interrupt driven
@@ -65,6 +81,7 @@ interrupt 21 void SCI1_ISR(void) {
 	// if a character is ready to send, send one off the stack
 	if (SCI1SR1 & 0x40) {
 		if (send_stack_pos > 0) {
+			// be sure to decrement stack position first
 			send_stack_pos--;
 			SCI1DRL = send_stack[send_stack_pos];
 		}
