@@ -12,7 +12,7 @@
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 
-#define SEND_STACK_SIZE (unsigned char)32
+#define SEND_STACK_SIZE (char)32
 
 // stack used for buffering data to transmit via SCI  
 char send_stack[SEND_STACK_SIZE];

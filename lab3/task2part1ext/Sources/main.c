@@ -30,8 +30,10 @@ unsigned char disp_interval_scale = 1;
 unsigned char disp_interval_count = 0;
 
 // the number we're displaying on 7segs
-unsigned int disp_num = 0x8AFE;
+unsigned int disp_num = 0x0000;
 
+// store the digits 
+char digits[4];
 
 // a small delay (not very accurate!)
 void delay_small(void) {
@@ -124,9 +126,6 @@ void get_digits_hex(unsigned int val, char* digits) {
 void main_loop(void) {
 
 	unsigned char i = 0;
-	
-	// store the digits 
-	char digits[4];
 
 	if (display_mode == DISPLAY_DEC) {
 		get_digits_dec(disp_num, digits);
@@ -174,17 +173,16 @@ interrupt 21 void SCI1_ISR(void) {
 	// switch between hex and dec display as required
 	if (received == 'h') { display_mode = DISPLAY_HEX; return; }
 	else if (received == 'd') { display_mode = DISPLAY_DEC; return; }
+	else {
 
-	// handle digits - use the fact that ASCII numerals start at 48
-	digit = received - 48;
-
-	// if it's not a digit, return
-	if (digit < 0 || digit > 9) { return; }
-
-	// otherwise, set the appropriate scaling factor
-	disp_interval_scale = digit + 1;
-	
-	return;
+		// handle digits - use the fact that ASCII numerals start at 48
+		digit = received - 48;
+		
+		// set the appropriate scaling factor if we need to
+		if (digit >= 0 && digit <= 9) {
+			disp_interval_scale = digit + 1;
+		}
+	}
 }
 
 interrupt 12 void TC4_ISR(void) {
