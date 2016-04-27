@@ -71,33 +71,52 @@ void get_ascii_hex(char val, unsigned char* digits) {
 
 // advance the sending state machine - called when transmitting data
 void transmit_char(void) {
-
+	
 	if (send_state == SEND_0) {
+
+		// send a '0' if we're at the start
 		SCI1DRL = '0';
 		send_state = SEND_x;
+
 	} else if (send_state == SEND_x) {
+	
+		// send an 'x' if it's after a '0'
 		SCI1DRL = 'x';
 		send_state = SEND_DIGIT_0;
+
 	} else if (send_state == SEND_DIGIT_0) {
+
 		// compute the digits to send
 		get_ascii_hex(send_stack[send_stack_pos], data_digits_ascii);
+
 		// send the first digit
 		SCI1DRL = data_digits_ascii[0];
 		send_state = SEND_DIGIT_1;
+
 	} else if (send_state == SEND_DIGIT_1) {
+
 		// send the second digit
 		SCI1DRL = data_digits_ascii[1];
 		send_state = SEND_TAIL_MSG;
+
 	} else if (send_state == SEND_TAIL_MSG) {
+
 		// if we're at the end, switch state
 		if (tail_msg[tail_msg_pos] == '\0') {
+
 			tail_msg_pos = 0;
 			send_stack_pos--;
 			send_state = SEND_0;
+
 			// also check if we should disable transmission interrupts
 			if (send_stack_pos == -1) {
 				SCI1CR1 &= ~(0x80);
 			}
+		} else {
+			
+			// otherwise, send the message data
+			SCI1DRL = tail_msg[tail_msg_pos];
+			tail_msg_pos++;
 		}
 	}
 }
@@ -129,7 +148,7 @@ interrupt 21 void SCI1_ISR(void) {
 		if (send_stack_pos < SEND_STACK_SIZE - 1) {
 			send_stack[send_stack_pos] = data_received;
 			send_stack_pos++;
-			// we have data now, so enable transmission interrupts
+			// we have data now, so enable transmission interrupts:
 			SCI1CR1 |= 0x80;
 		}
 	} 
