@@ -70,13 +70,16 @@ void write_7seg(unsigned char seg, char data) {
 	PORTB = data;
 }
 
-// get the two decimal digits from the value (0.0 to 5.0) represented
+// get the two decimal digits from the value (0.0 to 5.1) represented
 // with an int from 0 to 255
 // digits: pointer to digits to write to in memory (size 2)
 void get_digits(unsigned char val, char* digits) {
 	
+	// see log book for justification
 	const unsigned int VAL_MAX = 255;
-	const unsigned int VAL_DIV = VAL_MAX / 5;
+	const unsigned int VAL_DIV = 50;
+
+	// digits[0] is the most significant digit (before decimal point)
 	digits[0] = val / VAL_DIV;
 	digits[1] = (val % VAL_DIV) / (VAL_DIV / 10);
 }
