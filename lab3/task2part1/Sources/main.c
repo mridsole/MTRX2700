@@ -60,10 +60,10 @@ void get_ascii_hex(char val, unsigned char* digits) {
 	for (i = 0; i < 2; i++) {
 	
 		// get the actual value of the digit
-		digits[i] = (unsigned char)((val >> (4 * i)) & 0x0F);
+		digits[1 - i] = (unsigned char)((val >> (4 * i)) & 0x0F);
 		
 		// get the ASCII of the value - see ASCII table to see how this works
-		digits[i] += (digits[i] < 10) ? 48 : 87;
+		digits[1 - i] += (digits[1 - i] < 10) ? 48 : 87;
 	}
 
 	return;
