@@ -110,7 +110,7 @@ void transmit_char(void) {
 
 			// also check if we should disable transmission interrupts
 			if (send_stack_pos == -1) {
-				SCI1CR1 &= ~(0x80);
+				SCI1CR2 &= ~(0x80);
 			}
 		} else {
 			
@@ -149,7 +149,7 @@ interrupt 21 void SCI1_ISR(void) {
 			send_stack[send_stack_pos] = data_received;
 			send_stack_pos++;
 			// we have data now, so enable transmission interrupts:
-			SCI1CR1 |= 0x80;
+			SCI1CR2 |= 0x80;
 		}
 	} 
 	
