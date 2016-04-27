@@ -47,8 +47,9 @@ void config_SCI(void) {
 	SCI1BDL = 0x9C;
 
 	// control registers - M = 0, WAKE = 0, no parity, use transmit and receive interrupts
+	// (at the start however, only enable receive interrupts)
 	SCI1CR1 = 0x00;
-	SCI1CR2 = 0xAC;
+	SCI1CR2 = 0x2C;
 
 	return;
 }
